@@ -1,44 +1,60 @@
 import { useEffect, useState } from "react";
-import { SidebarContainer, UnorderedList, ListItem } from "./styles/SidebarStyles";
+import {
+  SidebarContainer,
+  UnorderedList,
+} from "./styles/SidebarStyles";
 import { ChatHeader } from "./styles/ChatStyles";
 import { jwtDecode } from "jwt-decode";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
-import { setCurrentConversationId, setUserSelectedForChat } from "../redux/chatSlice";
+import {
+  setCurrentConversationId,
+  setUserSelectedForChat,
+} from "../redux/chatSlice";
 import useFetch from "./hooks/useFetch";
+import ChatCard from "./ChatCard";
 
-interface Chat {
-  id: string
-  username: string
-  email: string
+export interface Chat {
+  id: string;
+  firstname: string;
+  lastname: string;
+  username: string;
+  email: string;
 }
 
 const Sidebar = () => {
-  const [chats, setChats] = useState<Chat[]>([])
-  const {userSelectedForChat} = useAppSelector(state => state.chat)
+  const [chats, setChats] = useState<Chat[]>([]);
+  const { userSelectedForChat } = useAppSelector((state) => state.chat);
   const dispatch = useAppDispatch();
   const token = sessionStorage.getItem("token");
   const currentUser: { id: string } = jwtDecode(token as string);
   const { get, post } = useFetch();
+
   useEffect(() => {
     const fetchChats = async () => {
-      const data = await get("users")
-      setChats(data.filter((chat: any) => chat.id !== currentUser?.id))
+      const data = await get("users");
+      setChats(data.filter((chat: any) => chat.id !== currentUser?.id));
+    };
+
+    fetchChats();
+  }, []);
+
+  useEffect(() => {
+    dispatch(
+      setUserSelectedForChat({
+        id: chats[0]?.id,
+        firstname: chats[0]?.firstname,
+        lastname: chats[0]?.lastname,
+        username: chats[0]?.username,
+        email: chats[0]?.email,
+      })
+    );
+  }, [chats]);
+
+  useEffect(() => {
+    if(userSelectedForChat.id) {
+      createConversation();
     }
-
-    fetchChats()
-  }, [])
-
-  useEffect(() => {
-    dispatch(setUserSelectedForChat({id: chats[0]?.id, username: chats[0]?.username, email: chats[0]?.email}))
-  }, [chats])
-
-  useEffect(() => {
-    createConversation();
-  },[userSelectedForChat])
-
-  const handleChatClick = (chatId: string) => {
-    dispatch(setUserSelectedForChat(chats.find(chat => chat.id === chatId) || {id: '', username: '', email: ''}))
-  }
+  }, [userSelectedForChat.id]);
 
   const createConversation = async () => {
     if (!userSelectedForChat.id) return;
@@ -47,27 +63,27 @@ const Sidebar = () => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${sessionStorage.getItem("token")}`
+        Authorization: `Bearer ${sessionStorage.getItem("token")}`,
       },
       body: JSON.stringify({
         sender: currentUser.id,
-        recipient: userSelectedForChat?.id
-      })
+        recipient: userSelectedForChat?.id,
+      }),
     });
-    
+
     dispatch(setCurrentConversationId(newConversation.chat_id));
-  }
+  };
 
   return (
     <SidebarContainer>
       <ChatHeader>Chats</ChatHeader>
       <UnorderedList>
-        {chats.map((chat) => (
-          <ListItem onClick={() => handleChatClick(chat.id)} key={chat.id}>{chat.username}</ListItem>
-        ))}
+        {chats.map((chat) => {
+          return <ChatCard key={chat.id} chat={chat} />
+        })}
       </UnorderedList>
     </SidebarContainer>
-  )
-}
+  );
+};
 
-export default Sidebar
+export default Sidebar;

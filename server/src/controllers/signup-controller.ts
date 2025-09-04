@@ -7,13 +7,13 @@ const saltRounds = 10;
 const JWT_SECRET = process.env.JWT_SECRET || '';
 
 export const signupController = async (req: any, res: any) => {
-  const { username, email, password } = req.body;
+  const { firstname, lastname, username, email, password } = req.body;
 
   const hashedPassword = await bcrypt.hash(password, saltRounds);
 
   const { data: userData, error: userError } = await supabase
     .from("users")
-    .insert([{ username, email, password: hashedPassword }])
+    .insert([{ first_name: firstname, last_name: lastname, username, email, password: hashedPassword }])
     .select()
     .single();
   if (userError) {

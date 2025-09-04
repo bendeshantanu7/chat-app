@@ -8,7 +8,6 @@ const index_1 = require("../index");
 const userRouter = express_1.default.Router();
 userRouter.get('/', async (req, res) => {
     const { data, error } = await index_1.supabase.from('users').select('id, username, email');
-    console.log('data', data);
     if (error) {
         console.error(error);
         res.status(500).send('Error fetching users');

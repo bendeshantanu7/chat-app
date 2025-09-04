@@ -69,4 +69,14 @@ export const ChatHeader = styled.div`
   border-bottom: 1px solid #eee;
   font-weight: 600;
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+`
+
+export const ChatWindowContainer = styled.div`
+flex: 1;
+overflow-y: auto;
+padding: 10px;
+margin-bottom: 60px;
 `

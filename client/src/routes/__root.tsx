@@ -13,9 +13,9 @@ const AppContainer = styled.div`
   height: 100vh;
 `;
 
-const MainContent = styled.div<{showSidebar: boolean}>`
+const MainContent = styled.div<{showsidebar: boolean}>`
   display: grid;
-  grid-template-columns: ${props => props.showSidebar ? '300px 1fr' : '1fr'};
+  grid-template-columns: ${props => props.showsidebar ? '300px 1fr' : '1fr'};
   flex: 1;
   overflow: hidden;
 `;
@@ -32,7 +32,7 @@ const AuthenticatedLayout = () => {
   return (
       <AppContainer>
         <Header />
-        <MainContent showSidebar={isLoggedIn}>
+        <MainContent showsidebar={isLoggedIn}>
           {isLoggedIn && <Sidebar />}
           <Outlet />
         </MainContent>

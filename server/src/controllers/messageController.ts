@@ -26,8 +26,10 @@ export const messageController = async (
         senderId: sender,
         receiverId: receiver,
         message: content,
+        status: "sent",
         conversationId: conversationId,
       });
+      return message;
   } catch (error) {
     console.error(error);
   }
@@ -42,6 +44,10 @@ export const getConversationMessages = async (req: any, res: any) => {
     const messages = await messagesCollection
       .find({ conversationId: conversationId })
       .toArray();
+    console.log(messages);
+    messages.forEach((message: any) => {
+      message.status = "delivered"; // Set status to delivered for all messages
+    })
     res.status(200).json(messages);
   } catch (error) {
     console.error(error);

@@ -28,7 +28,7 @@ const Header = () => {
 
     return (
         <Customheader>
-            <h2>Chat App</h2>
+            <h2>Friends Chat</h2>
             {isLoggedIn && <LogoutButton onClick={() => {
                 sessionStorage.removeItem('token')
                 dispatch(logout());

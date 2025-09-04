@@ -3,8 +3,6 @@ import { createRoot } from 'react-dom/client';
 import './index.css';
 import { createRouter, RouterProvider } from '@tanstack/react-router';
 import { routeTree } from './routeTree.gen';
-import { AuthContextProvider } from './context/AuthContext';
-import { UserContext } from './context/UserChat';
 import { Provider } from 'react-redux';
 import { store } from './redux/store';
 

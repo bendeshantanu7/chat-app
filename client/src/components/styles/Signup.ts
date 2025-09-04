@@ -13,7 +13,7 @@ export const FormContainer = styled.div`
   border: 1px solid #fff;
   border-radius: 5px;
   box-shadow: 2px 3px rgb(0, 0, 0, 0.5);
-  padding: 20px 10px;
+  padding: 20px 40px;
 `;
 
 export const Title = styled.h2`
@@ -73,4 +73,10 @@ export const SubmitButton = styled.button`
   &:active {
     transform: scale(0.98);
   }
+`;
+
+export const NameContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
 `;
