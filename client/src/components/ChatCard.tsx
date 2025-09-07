@@ -51,7 +51,7 @@ const ChatCard = ({chat}: {chat: Chat}) => {
             </div>
             <ChatNameContainer>
                 <strong>{`${chat.firstname} ${chat.lastname}`}</strong>
-                <span style={{ color: "gray" }}>last message preview...</span>
+                <span style={{ color: "gray" }}>{chat.lastMessage}</span>
             </ChatNameContainer>
         </ChatCardContainer>
     </ListItem>

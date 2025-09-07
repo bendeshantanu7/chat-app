@@ -28,8 +28,12 @@ export const messageController = async (
         message: content,
         status: "sent",
         conversationId: conversationId,
+        createdAt: new Date()
       });
-      return message;
+      return {
+        _id: message.insertedId,
+        createdAt: new Date(),
+      };
   } catch (error) {
     console.error(error);
   }
@@ -44,10 +48,9 @@ export const getConversationMessages = async (req: any, res: any) => {
     const messages = await messagesCollection
       .find({ conversationId: conversationId })
       .toArray();
-    console.log(messages);
     messages.forEach((message: any) => {
       message.status = "delivered"; // Set status to delivered for all messages
-    })
+    });
     res.status(200).json(messages);
   } catch (error) {
     console.error(error);

@@ -19,6 +19,7 @@ export async function run() {
     await client.connect(); // connect only once
     db = client.db("chatapp"); // replace with your db name
     console.log("✅ MongoDB connected");
+    const result = await db.collection("messages").deleteMany({ createdAt: { $exists: false } });
   }
   return db;
   } catch (err) {

@@ -24,8 +24,6 @@ const useSocket = () => {
     socket.emit("register", { userId: currentUser.id });
 
     socket.on("receive_message", (data) => {
-      console.log("receive", data);
-
       socket.emit("message_status", {
         status: "delivered",
         id: data.senderId,
@@ -39,13 +37,13 @@ const useSocket = () => {
             text: data.content,
             status: data.status,
             recipient: currentLoggedUser || '',
+            createdAt: data.createdAt
           },
         ]);
       }
     });
 
     socket.on("message_status", (data) => {
-      console.log("data", data.status);
       setMessages((prevMessages) => {
         return prevMessages.map((msg) => {
           if (msg.id === data._id) {
@@ -61,7 +59,7 @@ const useSocket = () => {
     };
   }, []);
 
-  return {messages, setMessages}
+  return { messages, setMessages }
 }
 
 export default useSocket;

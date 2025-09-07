@@ -1,16 +1,11 @@
-import { useState, useEffect } from "react";
-import {
-  ChatContainer,
-  ChatInputContainer,
-  ChatInput,
-  SendChatButton,
-} from "../styles/ChatStyles";
-import socket from "../../socket";
+import { useEffect } from "react";
+import { ChatContainer } from "../styles/ChatStyles";
 import { useAppSelector } from "../../redux/hooks";
 import useFetch from "../hooks/useFetch";
 import ChatMessages from "./ChatMessages";
 import useSocket from "../hooks/useSocket";
 import ChatWindowHeader from "./ChatWindowHeader";
+import ChatwindowInput from "./ChatInput";
 
 export interface Message {
   id?: string;
@@ -18,14 +13,12 @@ export interface Message {
   text: string;
   status?: string;
   recipient: string;
+  createdAt?: Date;
 }
 
 export default function Chat() {
-  const { userSelectedForChat, currentLoggedUser, currentConversationId } = useAppSelector(
-    (state) => state.chat
-  );
-  const {messages, setMessages} = useSocket();
-  const [input, setInput] = useState("");
+  const { currentConversationId } = useAppSelector((state) => state.chat);
+  const { messages, setMessages } = useSocket();
   const { get } = useFetch();
 
   useEffect(() => {
@@ -40,6 +33,7 @@ export default function Chat() {
             recipient: message.recipientId,
             status: message.status,
             conversationId: message.conversationId,
+            createdAt: message.createdAt
           };
         })
       );
@@ -50,35 +44,11 @@ export default function Chat() {
     }
   }, [currentConversationId]);
 
-  const sendMessage = () => {
-    if (!input.trim()) return;
-    setMessages([
-      ...messages,
-      { sender: currentLoggedUser || '', text: input, recipient: userSelectedForChat.id },
-    ]);
-    socket.emit("send_message", {
-      senderId: currentLoggedUser || '',
-      receiverId: userSelectedForChat.id,
-      content: input,
-      conversationId: currentConversationId,
-    });
-    setInput("");
-  };
-
   return (
     <ChatContainer>
       <ChatWindowHeader />
       <ChatMessages messages={messages} />
-      <ChatInputContainer>
-        <ChatInput
-          type="text"
-          placeholder="Type a message..."
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-        />
-        <SendChatButton onClick={sendMessage}>Send</SendChatButton>
-      </ChatInputContainer>
+      <ChatwindowInput messages={messages} setMessages={setMessages} />
     </ChatContainer>
   );
 }

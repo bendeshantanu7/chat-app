@@ -61,6 +61,9 @@ export const ChatBubble = styled.div<{ sender: string }>`
   margin-bottom: 10px;
   background: ${props => props.sender === "me" ? "#4caf50" : "#fff"};
   color: ${props => props.sender === "me" ? "#fff" : "#000"};
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
 `
 
 export const ChatHeader = styled.div`
@@ -80,3 +83,8 @@ overflow-y: auto;
 padding: 10px;
 margin-bottom: 60px;
 `
+
+export const TimestampContainer = styled.div`
+display: flex;
+align-items: flex-end;
+font-size: 10px`
