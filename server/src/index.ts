@@ -26,6 +26,10 @@ app.use(cors());
 
 run()
 
+app.get("/", (req, res) => {
+  res.send("✅ Chat backend is live!");
+});
+
 app.use('/users', userRouter);
 
 app.use('/auth', authRouter);
