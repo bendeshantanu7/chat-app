@@ -3,7 +3,7 @@ import {
   SidebarContainer,
   UnorderedList,
 } from "./styles/SidebarStyles";
-import { ChatHeader, ChatInput } from "./styles/ChatStyles";
+import { ChatHeader } from "./styles/ChatStyles";
 import { jwtDecode } from "jwt-decode";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import {
@@ -12,6 +12,9 @@ import {
 } from "../redux/chatSlice";
 import useFetch from "./hooks/useFetch";
 import ChatCard from "./ChatCard";
+import SearchBar from "./SearchBar";
+import useRecentChatSocket from "./hooks/useRecentChatSocket";
+import useSocket from "./hooks/useSocket";
 
 export interface Chat {
   id: string;
@@ -29,7 +32,8 @@ const Sidebar = () => {
   const token = sessionStorage.getItem("token");
   const currentUser: { id: string } = jwtDecode(token as string);
   const { get, post } = useFetch();
-  const [searchTerm, setSearchTerm] = useState<string>('')
+  const {data} = useSocket()
+  console.log('data', data)
 
   useEffect(() => {
     const fetchChats = async () => {
@@ -48,6 +52,20 @@ const Sidebar = () => {
 
     fetchChats();
   }, []);
+
+  useEffect(() => {
+    setChats(data.map((chat: any) => {
+        return {
+          id: chat.id,
+          firstname: chat.first_name,
+          lastname: chat.last_name,
+          username: chat.username,
+          email: chat.email,
+          lastMessage: chat.lastMessage
+        }
+      }).filter((chat: any) => chat.id !== currentUser.id));
+
+  },[data])
 
   useEffect(() => {
     dispatch(
@@ -88,7 +106,7 @@ const Sidebar = () => {
   return (
     <SidebarContainer>
       <ChatHeader>Chats</ChatHeader>
-      <ChatInput placeholder="Search" type="text" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}  />
+      <SearchBar />
       <UnorderedList>
         {chats.map((chat) => {
           return <ChatCard key={chat.id} chat={chat} />

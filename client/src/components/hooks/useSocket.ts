@@ -11,6 +11,22 @@ const useSocket = () => {
     const { currentConversationId, currentLoggedUser } = useAppSelector((state) => state.chat);
     const currentConversationRef = useRef(currentConversationId);
 
+    const [data, setData] = useState([])
+    useEffect(() => {
+        socket.connect()
+
+        socket.on('recentChatUpdate',(data) => {
+            console.log(data)
+            setData(data)
+        })
+
+        return () => {
+            socket.off("receive_message");
+            socket.disconnect();
+        };
+
+    },[])
+
     useEffect(() => {
     currentConversationRef.current = currentConversationId;
   }, [currentConversationId]);
@@ -24,6 +40,7 @@ const useSocket = () => {
     socket.emit("register", { userId: currentUser.id });
 
     socket.on("receive_message", (data) => {
+      console.log('data', data)
       socket.emit("message_status", {
         status: "delivered",
         id: data.senderId,
@@ -59,7 +76,7 @@ const useSocket = () => {
     };
   }, []);
 
-  return { messages, setMessages }
+  return { data, messages, setMessages }
 }
 
 export default useSocket;

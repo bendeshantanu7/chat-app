@@ -4,20 +4,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const __1 = require("..");
+const signup_controller_1 = require("../controllers/signup-controller");
+const login_controller_1 = require("../controllers/login-controller");
 const authRouter = express_1.default.Router();
-authRouter.post("/login", (req, res) => { });
-authRouter.post("/signup", async (req, res) => {
-    const { username, email, password } = req.body;
-    const { data: userData, error: userError } = await __1.supabase.from('users').insert([
-        { username, email, password }
-    ]);
-    if (userError) {
-        console.error(userError);
-        res.status(500).send("Error creating user profile");
-    }
-    else {
-        res.status(200).json(userData);
-    }
-});
+authRouter.post("/login", login_controller_1.loginController);
+authRouter.post("/signup", signup_controller_1.signupController);
 exports.default = authRouter;

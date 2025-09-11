@@ -1,4 +1,5 @@
 import { io } from '.';
+import { getRecentChats } from './controllers/conversation-controller';
 import { messageController } from './controllers/messageController';
 
 const onlineUsers = new Map();
@@ -27,6 +28,11 @@ export const socketController = (socket: any) =>{
             status: 'sent',
             message: message
         })
+        const recentSenderChatData = await getRecentChats(senderId)
+        const recentReceiverChatData = await getRecentChats(receiverId)
+        io.to(senderSocketId).emit('recentChatUpdate', recentSenderChatData)
+        io.to(receiverSocketId).emit('recentChatUpdate', recentReceiverChatData)
+        console.log('receiverSocketId', receiverSocketId)
         if (receiverSocketId) {
             io.to(receiverSocketId).emit("receive_message", {
                 id: message?._id.toString(),

@@ -48,6 +48,11 @@ export const conversationController = async (
 export const recentChats = async (req: express.Request, res: express.Response) => {
   const {userId} = req.params
   console.log('userId', userId)
+  const recentChatConversations = await getRecentChats(userId)
+  res.status(200).json(recentChatConversations)
+}
+
+export const getRecentChats = async (userId: string) => {
   const db = await run();
   const messages = db.collection('messages')
   const result = await messages.aggregate([
@@ -69,8 +74,9 @@ export const recentChats = async (req: express.Request, res: express.Response) =
   ]).toArray()
 
   const userDetails = Promise.all(result.map(async (conversation: any) => {
-    const receiverDetails = await supabase.from("users").select("first_name, last_name, id, username, email").eq("id", conversation.recipientId)
-
+    const recentId = conversation.senderId === userId ? conversation.recipientId : conversation.senderId
+    const receiverDetails = await supabase.from("users").select("first_name, last_name, id, username, email").eq("id", recentId)
+    console.log('receiverDetails', receiverDetails)
     return {
       ...receiverDetails,
       lastMessage: conversation.lastMessage
@@ -84,5 +90,5 @@ export const recentChats = async (req: express.Request, res: express.Response) =
   }
   });
   console.log('result', recentConversations)
-  res.status(200).json(recentConversations.flat())
+  return recentConversations.flat()
 }
