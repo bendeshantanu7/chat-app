@@ -1,19 +1,19 @@
 import { useEffect, useState } from "react";
 import {
+  ChatSidebarHeader,
   SidebarContainer,
   UnorderedList,
 } from "./styles/SidebarStyles";
-import { ChatHeader } from "./styles/ChatStyles";
 import { jwtDecode } from "jwt-decode";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import {
   setCurrentConversationId,
+  setRecentChats,
   setUserSelectedForChat,
 } from "../redux/chatSlice";
 import useFetch from "./hooks/useFetch";
 import ChatCard from "./ChatCard";
 import SearchBar from "./SearchBar";
-import useRecentChatSocket from "./hooks/useRecentChatSocket";
 import useSocket from "./hooks/useSocket";
 
 export interface Chat {
@@ -22,23 +22,22 @@ export interface Chat {
   lastname: string;
   username: string;
   email: string;
-  lastMessage: string;
+  lastMessage?: string;
 }
 
 const Sidebar = () => {
   const [chats, setChats] = useState<Chat[]>([]);
-  const { userSelectedForChat } = useAppSelector((state) => state.chat);
+  const { userSelectedForChat, recentChats } = useAppSelector((state) => state.chat);
   const dispatch = useAppDispatch();
   const token = sessionStorage.getItem("token");
   const currentUser: { id: string } = jwtDecode(token as string);
   const { get, post } = useFetch();
   const {data} = useSocket()
-  console.log('data', data)
 
   useEffect(() => {
     const fetchChats = async () => {
       const data = await get(`conversations/recentChats/${currentUser?.id}`);
-      setChats(data.map((chat: any) => {
+      const recentChats = data.map((chat: any) => {
         return {
           id: chat.id,
           firstname: chat.first_name,
@@ -47,14 +46,17 @@ const Sidebar = () => {
           email: chat.email,
           lastMessage: chat.lastMessage
         }
-      }).filter((chat: any) => chat.id !== currentUser.id));
+      }).filter((chat: any) => chat.id !== currentUser.id);
+      setChats(recentChats);
+      dispatch(setRecentChats(recentChats));
     };
 
     fetchChats();
   }, []);
 
   useEffect(() => {
-    setChats(data.map((chat: any) => {
+
+    const recentChats = data.map((chat: any) => {
         return {
           id: chat.id,
           firstname: chat.first_name,
@@ -63,7 +65,10 @@ const Sidebar = () => {
           email: chat.email,
           lastMessage: chat.lastMessage
         }
-      }).filter((chat: any) => chat.id !== currentUser.id));
+      }).filter((chat: any) => chat.id !== currentUser.id)
+    setChats(recentChats);
+    dispatch(setRecentChats(recentChats))
+
 
   },[data])
 
@@ -105,10 +110,12 @@ const Sidebar = () => {
 
   return (
     <SidebarContainer>
-      <ChatHeader>Chats</ChatHeader>
+      <ChatSidebarHeader>
+        <span>Chats</span>
+      </ChatSidebarHeader>
       <SearchBar />
       <UnorderedList>
-        {chats.map((chat) => {
+        {recentChats.map((chat: any) => {
           return <ChatCard key={chat.id} chat={chat} />
         })}
       </UnorderedList>

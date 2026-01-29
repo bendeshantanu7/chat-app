@@ -1,5 +1,5 @@
-import { ChatHeader } from "../styles/ChatStyles"
-import { CustomImg } from "../ChatCard";
+import { ChatHeader, CustomImg } from "../styles/ChatStyles"
+// import { CustomImg } from "../ChatCard";
 import default_pp from "../../assets/default_pp.png";
 import { useAppSelector } from "../../redux/hooks";
 
