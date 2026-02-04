@@ -14,7 +14,6 @@ import {
 import useFetch from "./hooks/useFetch";
 import ChatCard from "./ChatCard";
 import SearchBar from "./SearchBar";
-import useSocket from "./hooks/useSocket";
 
 export interface Chat {
   id: string;
@@ -23,6 +22,7 @@ export interface Chat {
   username: string;
   email: string;
   lastMessage?: string;
+  photo_url?: string;
 }
 
 const Sidebar = () => {
@@ -32,7 +32,7 @@ const Sidebar = () => {
   const token = sessionStorage.getItem("token");
   const currentUser: { id: string } = jwtDecode(token as string);
   const { get, post } = useFetch();
-  const {data} = useSocket()
+  // const { data } = useSocket()
 
   useEffect(() => {
     const fetchChats = async () => {
@@ -40,11 +40,12 @@ const Sidebar = () => {
       const recentChats = data.map((chat: any) => {
         return {
           id: chat.id,
-          firstname: chat.first_name,
-          lastname: chat.last_name,
+          firstname: chat.firstname,
+          lastname: chat.lastname,
           username: chat.username,
           email: chat.email,
-          lastMessage: chat.lastMessage
+          lastMessage: chat.lastMessage,
+          photo_url: chat.photo_url
         }
       }).filter((chat: any) => chat.id !== currentUser.id);
       setChats(recentChats);
@@ -54,23 +55,23 @@ const Sidebar = () => {
     fetchChats();
   }, []);
 
-  useEffect(() => {
+  // useEffect(() => {
 
-    const recentChats = data.map((chat: any) => {
-        return {
-          id: chat.id,
-          firstname: chat.first_name,
-          lastname: chat.last_name,
-          username: chat.username,
-          email: chat.email,
-          lastMessage: chat.lastMessage
-        }
-      }).filter((chat: any) => chat.id !== currentUser.id)
-    setChats(recentChats);
-    dispatch(setRecentChats(recentChats))
+  //   const recentChats = data.map((chat: any) => {
+  //     return {
+  //       id: chat.id,
+  //       firstname: chat.firstname,
+  //       lastname: chat.lastname,
+  //       username: chat.username,
+  //       email: chat.email,
+  //       lastMessage: chat.lastMessage
+  //     }
+  //   }).filter((chat: any) => chat.id !== currentUser.id)
+  //   setChats(recentChats);
+  //   dispatch(setRecentChats(recentChats))
 
 
-  },[data])
+  // }, [data])
 
   useEffect(() => {
     dispatch(
@@ -80,12 +81,13 @@ const Sidebar = () => {
         lastname: chats[0]?.lastname,
         username: chats[0]?.username,
         email: chats[0]?.email,
+        photo_url: chats[0]?.photo_url
       })
     );
   }, [chats]);
 
   useEffect(() => {
-    if(userSelectedForChat.id) {
+    if (userSelectedForChat.id) {
       createConversation();
     }
   }, [userSelectedForChat.id]);

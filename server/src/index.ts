@@ -20,7 +20,8 @@ export const io = new Server(server, {
     cors: {origin: "*"}
 })
 
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 app.use(cors());
 
@@ -28,6 +29,14 @@ run()
 
 app.get("/", (req, res) => {
   res.send("✅ Chat backend is live!");
+});
+
+app.get("/debug/online-users", (req, res) => {
+  const { onlineUsers, logBuffer } = require("./socket");
+  res.json({
+      onlineUsers: Array.from(onlineUsers.entries()),
+      logs: logBuffer
+  });
 });
 
 app.use('/users', userRouter);

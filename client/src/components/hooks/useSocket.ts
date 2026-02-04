@@ -4,79 +4,117 @@ import { setCurrentLoggedUser } from "../../redux/chatSlice";
 import { jwtDecode } from "jwt-decode";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import type { Message } from "../ChatWindow/Chat";
+import { setMessages } from "../../redux/messageSlice";
 
 const useSocket = () => {
     const dispatch = useAppDispatch();
-    const [messages, setMessages] = useState<Message[]>([]);
+    // const [messages, setMessages] = useState<Message[]>([]);
+    // const [data, setData] = useState([]);
     const { currentConversationId, currentLoggedUser } = useAppSelector((state) => state.chat);
     const currentConversationRef = useRef(currentConversationId);
+    const { messages} = useAppSelector(state => state.message)
 
-    const [data, setData] = useState([])
+    // Keep ref updated
     useEffect(() => {
-        socket.connect()
+        currentConversationRef.current = currentConversationId;
+    }, [currentConversationId]);
 
-        socket.on('recentChatUpdate',(data) => {
-            console.log(data)
-            setData(data)
-        })
+    useEffect(() => {
+        // Connect if not already connected
+        if (!socket.connected) {
+            socket.connect();
+        }
 
-        return () => {
-            socket.off("receive_message");
-            socket.disconnect();
+        const handleConnect = () => {
+            console.log("Socket connected:", socket.id);
+            const token = sessionStorage.getItem("token");
+            if (token) {
+                try {
+                    const currentUser: any = jwtDecode(token);
+                    const userId = currentUser.id || currentUser.sub; 
+                    dispatch(setCurrentLoggedUser(userId));
+                    socket.emit("register", { userId });
+                } catch (e) {
+                    console.error("Error decoding token for socket registration:", e);
+                }
+            }
         };
 
-    },[])
+        const handleReceiveMessage = (data: any) => {
+            console.log('socket receive_message:', data);
+            
+            // Acknowledge delivery
+            // socket.emit("message_status", {
+            //     status: "delivered",
+            //     id: data.senderId, 
+            // });
 
-    useEffect(() => {
-    currentConversationRef.current = currentConversationId;
-  }, [currentConversationId]);
+            console.log('check if matches', data.conversationId === currentConversationRef.current)
+            // Update messages if conversation matches
+            if (data.conversationId === currentConversationRef.current) {
+                let newMessages = []
+                if(messages.some(m => m.id === data._id)) {
+                    newMessages = messages
+                } else {
+                    newMessages = [...messages, {
+                        id: data._id,
+                        sender: data.senderId,
+                        text: data.content,
+                        status: data.status,
+                        recipient: currentLoggedUser || '', 
+                        createdAt: data.createdAt
+                    }]
+                } 
+                // dispatch(setMessages(newMessages))
+                //  setMessages((prev) => {
+                //     // Avoid duplicates
+                //     if (prev.some(m => m.id === data._id)) return prev;
+                //     return [...prev, {
+                //         id: data._id,
+                //         sender: data.senderId,
+                //         text: data.content,
+                //         status: data.status,
+                //         recipient: currentLoggedUser || '', 
+                //         createdAt: data.createdAt
+                //     }];
+                //  });
+            }
+        };
 
-    useEffect(() => {
-    socket.connect();
-    console.log("Socket connected:"); // Check if socket is connected
-    const token = sessionStorage.getItem("token");
-    const currentUser: { id: string } = jwtDecode(token as string);
-    dispatch(setCurrentLoggedUser(currentUser.id))
-    socket.emit("register", { userId: currentUser.id });
+        const handleMessageStatus = (data: any) => {
+            const newMessages = messages.map(msg => {
+                return msg.id === data._id ? { ...msg, status: data.status } : msg
+            })
+            // dispatch(setMessages(newMessages))
+            // setMessages((prev) => prev.map(msg => 
+            //     msg.id === data._id ? { ...msg, status: data.status } : msg
+            // ));
+        };
 
-    socket.on("receive_message", (data) => {
-      console.log('data', data)
-      socket.emit("message_status", {
-        status: "delivered",
-        id: data.senderId,
-      });
-      if (data.conversationId === currentConversationRef.current) {
-        setMessages((prevMessages) => [
-          ...prevMessages,
-          {
-            id: data._id,
-            sender: data.senderId,
-            text: data.content,
-            status: data.status,
-            recipient: currentLoggedUser || '',
-            createdAt: data.createdAt
-          },
-        ]);
-      }
-    });
+        // const handleRecentChatUpdate = (updatedChats: any) => {
+        //      console.log("socket recentChatUpdate:", updatedChats);
+        //     //  setData(updatedChats);
+        // };
 
-    socket.on("message_status", (data) => {
-      setMessages((prevMessages) => {
-        return prevMessages.map((msg) => {
-          if (msg.id === data._id) {
-            return { ...msg, status: data.status };
-          }
-          return msg;
-        });
-      });
-    });
-    return () => {
-      socket.off("receive_message");
-      socket.disconnect();
-    };
-  }, []);
+        socket.on('connect', handleConnect);
+        socket.on('receive_message', handleReceiveMessage);
+        socket.on('message_status', handleMessageStatus);
+        // socket.on('recentChatUpdate', handleRecentChatUpdate);
 
-  return { data, messages, setMessages }
+        // If already connected, manually trigger registration logic
+        if (socket.connected) {
+            handleConnect();
+        }
+
+        return () => {
+            socket.off('connect', handleConnect);
+            socket.off('receive_message', handleReceiveMessage);
+            socket.off('message_status', handleMessageStatus);
+            // socket.off('recentChatUpdate', handleRecentChatUpdate);
+        };
+    }, [currentConversationId, currentLoggedUser, dispatch]); // Dependencies
+
+//   return { data }
 }
 
 export default useSocket;

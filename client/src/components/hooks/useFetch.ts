@@ -3,13 +3,15 @@ const baseUrl = import.meta.env.VITE_API_URL || "";
 const useFetch = () => {
 
 
-    const request = async (url: string,method: string, options: RequestInit) => {
+    const request = async (url: string, method: string, options: RequestInit) => {
+      const isFormData = options.body instanceof FormData;
+      
       const res = await fetch(`${baseUrl}/${url}`, {
         method,
         headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
-            ...options.headers
+          ...(isFormData ? {} : { "Content-Type": "application/json" }),
+          "Authorization": `Bearer ${token}`,
+          ...options.headers
         },
         body: method !== "GET" ? options.body : undefined,
       });

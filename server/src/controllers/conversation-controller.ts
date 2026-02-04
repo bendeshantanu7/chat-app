@@ -68,27 +68,48 @@ export const getRecentChats = async (userId: string) => {
         lastMessage: {$first: "$message"},
         senderId: {$first: "$senderId"},
         recipientId: {$first: "$receiverId"}
-
+        
       }
     }
   ]).toArray()
-
-  const userDetails = Promise.all(result.map(async (conversation: any) => {
+  console.log('result', result)
+  
+  const userDetails = await Promise.all(result.map(async (conversation: any) => {
     const recentId = conversation.senderId === userId ? conversation.recipientId : conversation.senderId
-    const receiverDetails = await supabase.from("users").select("first_name, last_name, id, username, email").eq("id", recentId)
-    console.log('receiverDetails', receiverDetails)
+    const { data: receiverDetails, error } = await supabase
+      .from("users")
+      .select("first_name, last_name, id, username, email, photo_url")
+      .eq("id", recentId)
+      .single();
+    
+    if (error || !receiverDetails) {
+      console.error('Error fetching user details:', error);
+      return null;
+    }
+
+    let photo_url = receiverDetails.photo_url || null;
+    if (photo_url) {
+      try {
+        const { getPresignedUrl } = await import("../services/s3-service");
+        const url = new URL(photo_url);
+        const key = decodeURIComponent(url.pathname.slice(1));
+        photo_url = await getPresignedUrl(key);
+      } catch (e) {
+        console.error('Error generating presigned URL for recent chat', recentId, e);
+      }
+    }
+
     return {
-      ...receiverDetails,
+      id: receiverDetails.id,
+      firstname: receiverDetails.first_name,
+      lastname: receiverDetails.last_name,
+      username: receiverDetails.username,
+      email: receiverDetails.email,
+      photo_url,
       lastMessage: conversation.lastMessage
     }
   }))
 
-  const recentConversations = (await userDetails).map(({ data, lastMessage }) => {
-    return {
-    ...data[0],
-    lastMessage
-  }
-  });
-  console.log('result', recentConversations)
-  return recentConversations.flat()
+  const recentConversations = userDetails.filter(u => u !== null);
+  return recentConversations;
 }

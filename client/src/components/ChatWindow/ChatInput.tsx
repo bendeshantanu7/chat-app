@@ -1,25 +1,43 @@
 import { useState } from "react";
 import { ChatInput, ChatInputContainer, SendChatButton } from "../styles/ChatStyles";
-import { useAppSelector } from "../../redux/hooks";
+import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import socket from "../../socket";
 import type { Message } from "./Chat";
+import { setMessages } from "../../redux/messageSlice";
 
-const ChatwindowInput = ({messages, setMessages}: {messages: Message[], setMessages: React.Dispatch<React.SetStateAction<Message[]>>}) => {
+const ChatwindowInput = () => {
   const [input, setInput] = useState("");
   const { userSelectedForChat, currentLoggedUser, currentConversationId } =
     useAppSelector((state) => state.chat);
+  const { messages } = useAppSelector(state => state.message)
+  const dispatch = useAppDispatch()
 
   const sendMessage = () => {
     if (!input.trim()) return;
-    setMessages([
+    console.log('send messages', [
       ...messages,
       {
         sender: currentLoggedUser || "",
         text: input,
         recipient: userSelectedForChat.id,
-        createdAt: new Date()
+        // createdAt: new Date()
       },
-    ]);
+    ])
+    dispatch(setMessages([
+      ...messages,
+      {
+        sender: currentLoggedUser || "",
+        text: input,
+        recipient: userSelectedForChat.id,
+        // createdAt: new Date()
+      },
+    ]));
+    // console.log('message', {
+    //   senderId: currentLoggedUser || "",
+    //   receiverId: userSelectedForChat.id,
+    //   content: input,
+    //   conversationId: currentConversationId,
+    // })
     socket.emit("send_message", {
       senderId: currentLoggedUser || "",
       receiverId: userSelectedForChat.id,

@@ -1,12 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
 import useFetch from "../../hooks/useFetch";
-import { useAppSelector } from "../../../redux/hooks";
+import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
 import { useEffect } from "react";
 import type { Message } from "../Chat";
+import { setMessages } from "../../../redux/messageSlice";
 
-const useMessages = (setMessages: (messages: Message[]) => void) => {
+const useMessages = () => {
   const { currentConversationId } = useAppSelector((state) => state.chat);
   const { get } = useFetch();
+  const dispatch = useAppDispatch();
   const { data, isLoading, isError } = useQuery({
     queryKey: ["messages", currentConversationId],
     queryFn: async () => {
@@ -21,6 +23,7 @@ const useMessages = (setMessages: (messages: Message[]) => void) => {
           status: message.status,
           conversationId: message.conversationId,
           createdAt: message.createdAt,
+
         };
       });
     },
@@ -28,10 +31,10 @@ const useMessages = (setMessages: (messages: Message[]) => void) => {
 
   useEffect(() => {
     if (data) {
-      setMessages(data);
+      dispatch(setMessages(data))
     }
-  }, [data, setMessages]);
+  }, [data]);
 
-  return { isLoading, isError }
+  return { data, isLoading, isError }
 };
 export default useMessages;

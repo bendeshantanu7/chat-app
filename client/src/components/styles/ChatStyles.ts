@@ -1,4 +1,4 @@
-import styled from "styled-components"
+import styled, { keyframes } from "styled-components"
 
 export const ChatInput = styled.input`
   flex: 1;
@@ -56,8 +56,9 @@ export const ChatInputContainer = styled.div`
   gap: 10px;
   position: absolute;
   bottom: 0;
-  width: -webkit-fill-available;
+  width: 100%;
   padding: 10px;
+  box-sizing: border-box;
   box-shadow: 5px 5px 10px rgb(0, 0, 0, 0.5);
   background: #fff;
 `
@@ -68,8 +69,30 @@ export const ChatContainer = styled.div`
   height: 100%;
   background: linear-gradient(180deg, #fafafa 0%, #ffffff 100%);
   overflow: hidden;
-  width: calc(100vw - 300px);
+  width: 100%;
   position: relative;
+`;
+
+export const BackButton = styled.button`
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #0f172a;
+  padding: 8px;
+  margin-right: 8px;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: #f1f5f9;
+  }
+
+  @media (max-width: 768px) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 `;
 
 export const ChatMessageContainer = styled.div<{ sender: string }>`
@@ -142,12 +165,35 @@ export const AvatarContainer = styled.div`
   position: relative;
   flex-shrink: 0;
 `;
-export const CustomImg = styled.img`
+export const shimmer = keyframes`
+  0% {
+    background-position: -468px 0;
+  }
+  100% {
+    background-position: 468px 0;
+  }
+`;
+
+export const CustomImg = styled.img<{ loaded?: boolean }>`
   border-radius: 50%;
   width: 52px;
   height: 52px;
   object-fit: cover;
   border: 2px solid #e5e5e5;
+  transition: opacity 0.5s ease-in-out;
+  opacity: ${props => props.loaded ? 1 : 0};
+  background: #f6f7f8;
+  background-image: linear-gradient(
+    to right,
+    #f6f7f8 0%,
+    #edeef1 20%,
+    #f6f7f8 40%,
+    #f6f7f8 100%
+  );
+  background-repeat: no-repeat;
+  background-size: 800px 104px;
+  display: inline-block;
+  animation: ${shimmer} 1.5s infinite linear;
 `;
 export const OnlineIndicator = styled.div<{ isOnline: boolean }>`
   position: absolute;

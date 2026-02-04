@@ -7,11 +7,8 @@ const saltRounds = 10;
 const JWT_SECRET = "Test123";
 
 export const loginController = async (req: express.Request, res: express.Response) => {
-  console.log('req', req)
-
   const { email, password } = req.body;
   const { data, error } = await supabase.from("users").select("*").eq("email", email).single();
-  console.log('data', data)
   bcrypt.compare(password, data.password, (err, result) => {
     if (err) {
       console.error("Error comparing passwords:", err);

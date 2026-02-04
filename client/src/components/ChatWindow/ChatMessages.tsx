@@ -9,11 +9,12 @@ import {
 import type { Message } from "./Chat";
 import { useAppSelector } from "../../redux/hooks";
 
-const ChatMessages = ({ messages }: { messages: Message[] }) => {
+const ChatMessages = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { currentLoggedUser } = useAppSelector((state) => state.chat);
-
+  const { messages } = useAppSelector((state) => state.message);
   useEffect(() => {
+    console.log('messages', messages)
     messagesEndRef.current?.scrollIntoView();
   }, [messages]);
   return (

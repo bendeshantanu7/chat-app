@@ -8,6 +8,7 @@ import {
   Input,
   SubmitButton,
   NameContainer,
+  FileInputLabel,
 } from "./styles/Signup";
 import useFetch from "./hooks/useFetch";
 import { Link, useRouter } from "@tanstack/react-router";
@@ -22,6 +23,7 @@ const Signup = () => {
     email: "",
     password: "",
   });
+  const [photo, setPhoto] = useState<File | null>(null);
 
   const { post } = useFetch();
   const router = useRouter();
@@ -30,8 +32,18 @@ const Signup = () => {
   const onSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      const formData = new FormData();
+      formData.append("firstname", formValues.firstname);
+      formData.append("lastname", formValues.lastname);
+      formData.append("username", formValues.username);
+      formData.append("email", formValues.email);
+      formData.append("password", formValues.password);
+      if (photo) {
+        formData.append("photo", photo);
+      }
+
       const res = await post("auth/signup", {
-        body: JSON.stringify(formValues),
+        body: formData,
       });
       sessionStorage.setItem("token", res.token);
       dispatch(login());
@@ -102,6 +114,17 @@ const Signup = () => {
               }
               required
             />
+          </InputGroup>
+          <InputGroup>
+            <FileInputLabel>
+              {photo ? photo.name : "📷 Upload Photo"}
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => setPhoto(e.target.files?.[0] || null)}
+                style={{ display: "none" }}
+              />
+            </FileInputLabel>
           </InputGroup>
           <SubmitButton type="submit">Sign Up</SubmitButton>
           <div style={{ marginTop: "12px", textAlign: "center" }}>

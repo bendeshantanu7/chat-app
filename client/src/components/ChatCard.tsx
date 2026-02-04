@@ -3,8 +3,9 @@ import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { setRecentChats, setUserSelectedForChat } from "../redux/chatSlice";
 import type { Chat } from "./Sidebar";
 import styled from "styled-components";
-import default_pp from "../assets/default_pp.png";
-import { AvatarContainer, ChatCardContainer, ChatNameText, CustomImg, TimestampContainer } from "./styles/ChatStyles";
+// Removed unused default_pp
+import { AvatarContainer, ChatCardContainer, ChatNameText, TimestampContainer } from "./styles/ChatStyles";
+import SmartImg from "./SmartImg";
 
 // export const ChatCardContainer = styled.div`
 //   display: flex;
@@ -29,7 +30,6 @@ export const ChatNameContainer = styled.div`
 const ChatCard = ({ chat }: { chat: Chat }) => {
   const dispatch = useAppDispatch();
   const { recentChats } = useAppSelector((state) => state.chat)
-
   const handleChatClick = () => {
     dispatch(
       setUserSelectedForChat({
@@ -38,6 +38,7 @@ const ChatCard = ({ chat }: { chat: Chat }) => {
         lastname: chat.lastname || "",
         username: chat.username || "",
         email: chat.email || "",
+        photo_url: chat.photo_url
       })
     );
     dispatch(setRecentChats([chat, ...recentChats.filter((c: any) => c.id !== chat.id)]));
@@ -47,7 +48,7 @@ const ChatCard = ({ chat }: { chat: Chat }) => {
     <ListItem onClick={() => handleChatClick()} key={chat.id}>
       <ChatCardContainer>
         <AvatarContainer>
-          <CustomImg src={default_pp} alt="Avatar" />
+          <SmartImg src={chat.photo_url} />
         </AvatarContainer>
         <ChatNameContainer>
           <ChatNameText>{`${chat.firstname} ${chat.lastname}`}</ChatNameText>

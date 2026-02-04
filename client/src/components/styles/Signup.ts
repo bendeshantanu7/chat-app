@@ -302,3 +302,30 @@ export const NameContainer = styled.div`
   justify-content: space-between;
   gap: 20px;
 `;
+
+export const FileInputLabel = styled.label`
+  width: 100%;
+  padding: 14px 16px;
+  border: 2px dashed var(--border-light);
+  border-radius: 10px;
+  font-size: 15px;
+  color: var(--text-secondary);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  background: var(--bg-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  
+  &:hover {
+    border-color: var(--brand-500);
+    background: var(--bg-secondary);
+    color: var(--brand-600);
+    transform: translateY(-1px);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+`;

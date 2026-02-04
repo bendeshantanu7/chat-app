@@ -7,8 +7,9 @@ export const SidebarContainer = styled.div`
   background: linear-gradient(180deg, #fafafa 0%, #f5f5f5 100%);
   border-right: 1px solid #e5e5e5;
   height: 100%;
-  overflow: hidden;
+  overflow: visible; /* Changed from hidden */
   box-shadow: 2px 0 12px rgba(0, 0, 0, 0.04);
+  position: relative;
 `;
 export const ChatSidebarHeader = styled(ChatHeader)`
   justify-content: space-between;
