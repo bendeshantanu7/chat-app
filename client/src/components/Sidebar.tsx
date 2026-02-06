@@ -32,7 +32,6 @@ const Sidebar = () => {
   const token = sessionStorage.getItem("token");
   const currentUser: { id: string } = jwtDecode(token as string);
   const { get, post } = useFetch();
-  // const { data } = useSocket()
 
   useEffect(() => {
     const fetchChats = async () => {
@@ -54,24 +53,6 @@ const Sidebar = () => {
 
     fetchChats();
   }, []);
-
-  // useEffect(() => {
-
-  //   const recentChats = data.map((chat: any) => {
-  //     return {
-  //       id: chat.id,
-  //       firstname: chat.firstname,
-  //       lastname: chat.lastname,
-  //       username: chat.username,
-  //       email: chat.email,
-  //       lastMessage: chat.lastMessage
-  //     }
-  //   }).filter((chat: any) => chat.id !== currentUser.id)
-  //   setChats(recentChats);
-  //   dispatch(setRecentChats(recentChats))
-
-
-  // }, [data])
 
   useEffect(() => {
     dispatch(

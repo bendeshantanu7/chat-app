@@ -18,7 +18,9 @@ const useFetch = () => {
 
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(data.message || "Something went wrong");
+        const error: any = new Error(data.error || "Something went wrong");
+        error.status = res.status;
+        throw error;
       }
       return data;
     };

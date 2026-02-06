@@ -108,7 +108,7 @@ export const StyledLink = styled(Link)`
   }
 `;
 
-// export const SignupContainer = styled.div`
+
 //   display: flex;
 //   align-items: center;
 //   justify-content: center;
@@ -327,5 +327,32 @@ export const FileInputLabel = styled.label`
   
   &:active {
     transform: translateY(0);
+  }
+`;
+
+export const ErrorMessage = styled.p`
+  color: #ff4d4f;
+  background: rgba(255, 77, 79, 0.1);
+  padding: 10px;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 20px;
+  border: 1px solid rgba(255, 77, 79, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  @keyframes slideIn {
+    from {
+      transform: translateY(-10px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
   }
 `;

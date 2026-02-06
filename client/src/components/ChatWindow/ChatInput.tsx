@@ -2,7 +2,6 @@ import { useState } from "react";
 import { ChatInput, ChatInputContainer, SendChatButton } from "../styles/ChatStyles";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import socket from "../../socket";
-import type { Message } from "./Chat";
 import { setMessages } from "../../redux/messageSlice";
 
 const ChatwindowInput = () => {
@@ -20,7 +19,7 @@ const ChatwindowInput = () => {
         sender: currentLoggedUser || "",
         text: input,
         recipient: userSelectedForChat.id,
-        // createdAt: new Date()
+        createdAt: new Date()
       },
     ])
     dispatch(setMessages([
@@ -29,7 +28,7 @@ const ChatwindowInput = () => {
         sender: currentLoggedUser || "",
         text: input,
         recipient: userSelectedForChat.id,
-        // createdAt: new Date()
+        createdAt: new Date()
       },
     ]));
     // console.log('message', {

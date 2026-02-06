@@ -1,15 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import socket from "../../socket";
 import { setCurrentLoggedUser } from "../../redux/chatSlice";
 import { jwtDecode } from "jwt-decode";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
-import type { Message } from "../ChatWindow/Chat";
-import { setMessages } from "../../redux/messageSlice";
 
 const useSocket = () => {
     const dispatch = useAppDispatch();
-    // const [messages, setMessages] = useState<Message[]>([]);
-    // const [data, setData] = useState([]);
     const { currentConversationId, currentLoggedUser } = useAppSelector((state) => state.chat);
     const currentConversationRef = useRef(currentConversationId);
     const { messages} = useAppSelector(state => state.message)

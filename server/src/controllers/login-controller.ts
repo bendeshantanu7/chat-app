@@ -9,6 +9,10 @@ const JWT_SECRET = "Test123";
 export const loginController = async (req: express.Request, res: express.Response) => {
   const { email, password } = req.body;
   const { data, error } = await supabase.from("users").select("*").eq("email", email).single();
+  
+  if (error || !data) {
+    return res.status(401).json({ error: "Invalid email or password" });
+  }
   bcrypt.compare(password, data.password, (err, result) => {
     if (err) {
       console.error("Error comparing passwords:", err);

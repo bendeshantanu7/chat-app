@@ -1,6 +1,5 @@
 import { BackButton, ChatHeader } from "../styles/ChatStyles"
 import SmartImg from "../SmartImg";
-// import { CustomImg } from "../ChatCard";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { setCurrentConversationId, setUserSelectedForChat } from "../../redux/chatSlice";
 import { IoArrowBack } from "react-icons/io5";

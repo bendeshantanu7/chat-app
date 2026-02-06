@@ -21,11 +21,7 @@ export interface Message {
 }
 
 export default function Chat() {
-  // const { messages, setMessages } = useSocket();
-  // const { isLoading, isError } = useMessages(setMessages);
-  const { data } = useMessages()
-  console.log('data', data)
-  // const [messages, setMessages] = useState<Message[]>([]);
+  const { data, isLoading, isError } = useMessages()
   const { recentChats, userSelectedForChat } = useAppSelector((state) => state.chat);
   const dispatch = useAppDispatch()
   const { currentConversationId, currentLoggedUser } = useAppSelector((state) => state.chat);

@@ -9,6 +9,7 @@ import {
   SubmitButton,
   NameContainer,
   FileInputLabel,
+  ErrorMessage,
 } from "./styles/Signup";
 import useFetch from "./hooks/useFetch";
 import { Link, useRouter } from "@tanstack/react-router";
@@ -24,6 +25,7 @@ const Signup = () => {
     password: "",
   });
   const [photo, setPhoto] = useState<File | null>(null);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const { post } = useFetch();
   const router = useRouter();
@@ -31,6 +33,16 @@ const Signup = () => {
 
   const onSignup = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const isValidEmail = (email: string) => {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    };
+
+    if (!isValidEmail(formValues.email)) {
+      setErrorMessage("Please enter a valid email address");
+      return;
+    }
+
     try {
       const formData = new FormData();
       formData.append("firstname", formValues.firstname);
@@ -57,30 +69,31 @@ const Signup = () => {
     <SignupContainer>
       <FormContainer>
         <Title>Create Account</Title>
-        <StyledForm onSubmit={onSignup}>
+        {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
+        <StyledForm onSubmit={onSignup} noValidate>
           <NameContainer>
             <InputGroup>
-            <Input
-              type="text"
-              placeholder="First name"
-              value={formValues.firstname}
-              onChange={(e) =>
-                setFormValues({ ...formValues, firstname: e.target.value })
-              }
-              required
-            />
-          </InputGroup>
-          <InputGroup>
-            <Input
-              type="text"
-              placeholder="Last name"
-              value={formValues.lastname}
-              onChange={(e) =>
-                setFormValues({ ...formValues, lastname: e.target.value })
-              }
-              required
-            />
-          </InputGroup>
+              <Input
+                type="text"
+                placeholder="First name"
+                value={formValues.firstname}
+                onChange={(e) =>
+                  setFormValues({ ...formValues, firstname: e.target.value })
+                }
+                required
+              />
+            </InputGroup>
+            <InputGroup>
+              <Input
+                type="text"
+                placeholder="Last name"
+                value={formValues.lastname}
+                onChange={(e) =>
+                  setFormValues({ ...formValues, lastname: e.target.value })
+                }
+                required
+              />
+            </InputGroup>
           </NameContainer>
           <InputGroup>
             <Input

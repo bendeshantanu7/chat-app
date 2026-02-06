@@ -7,6 +7,7 @@ import {
   InputGroup,
   Input,
   SubmitButton,
+  ErrorMessage,
 } from "./styles/Signup";
 import useFetch from "./hooks/useFetch";
 import { Link, useRouter } from "@tanstack/react-router";
@@ -18,14 +19,23 @@ const Login = () => {
     email: "",
     password: "",
   });
+  const [errorMessage, setErrorMessage] = useState("");
   const dispatch = useAppDispatch()
 
   const { post } = useFetch();
 
   const router = useRouter();
 
+  const isValidEmail = (email: string) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
+
   const onLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isValidEmail(formValues.email)) {
+      setErrorMessage("Please enter a valid email address");
+      return;
+    }
     try {
       const res = await post("auth/login", {
         body: JSON.stringify(formValues),
@@ -33,8 +43,13 @@ const Login = () => {
       sessionStorage.setItem("token", res.token);
       dispatch(login());
       await router.navigate({ to: "/chats" });
-    } catch (error) {
-      console.error("Error logging in:", error);
+    } catch (error: any) {
+      console.log(error)
+      if (error.status === 401) {
+        setErrorMessage("Invalid email or password");
+      } else {
+        setErrorMessage("Something went wrong. Please try again.");
+      }
     }
   };
 
@@ -42,7 +57,8 @@ const Login = () => {
     <SignupContainer>
       <FormContainer>
         <Title>Login</Title>
-        <StyledForm onSubmit={onLogin}>
+        {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
+        <StyledForm onSubmit={onLogin} noValidate>
           <InputGroup>
             <Input
               type="email"
