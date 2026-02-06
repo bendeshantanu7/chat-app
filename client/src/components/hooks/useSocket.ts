@@ -8,7 +8,7 @@ const useSocket = () => {
     const dispatch = useAppDispatch();
     const { currentConversationId, currentLoggedUser } = useAppSelector((state) => state.chat);
     const currentConversationRef = useRef(currentConversationId);
-    const { messages} = useAppSelector(state => state.message)
+    // const { messages} = useAppSelector(state => state.message)
 
     // Keep ref updated
     useEffect(() => {
@@ -48,19 +48,19 @@ const useSocket = () => {
             console.log('check if matches', data.conversationId === currentConversationRef.current)
             // Update messages if conversation matches
             if (data.conversationId === currentConversationRef.current) {
-                let newMessages = []
-                if(messages.some(m => m.id === data._id)) {
-                    newMessages = messages
-                } else {
-                    newMessages = [...messages, {
-                        id: data._id,
-                        sender: data.senderId,
-                        text: data.content,
-                        status: data.status,
-                        recipient: currentLoggedUser || '', 
-                        createdAt: data.createdAt
-                    }]
-                } 
+                // let newMessages = []
+                // if(messages.some(m => m.id === data._id)) {
+                //     newMessages = messages
+                // } else {
+                //     newMessages = [...messages, {
+                //         id: data._id,
+                //         sender: data.senderId,
+                //         text: data.content,
+                //         status: data.status,
+                //         recipient: currentLoggedUser || '', 
+                //         createdAt: data.createdAt
+                //     }]
+                // } 
                 // dispatch(setMessages(newMessages))
                 //  setMessages((prev) => {
                 //     // Avoid duplicates
@@ -77,14 +77,14 @@ const useSocket = () => {
             }
         };
 
-        const handleMessageStatus = (data: any) => {
-            const newMessages = messages.map(msg => {
-                return msg.id === data._id ? { ...msg, status: data.status } : msg
-            })
-            // dispatch(setMessages(newMessages))
-            // setMessages((prev) => prev.map(msg => 
-            //     msg.id === data._id ? { ...msg, status: data.status } : msg
-            // ));
+        const handleMessageStatus = () => {
+        //     // const newMessages = messages.map(msg => {
+        //     //     return msg.id === data._id ? { ...msg, status: data.status } : msg
+        //     // })
+        //     // dispatch(setMessages(newMessages))
+        //     // setMessages((prev) => prev.map(msg => 
+        //     //     msg.id === data._id ? { ...msg, status: data.status } : msg
+        //     // ));
         };
 
         // const handleRecentChatUpdate = (updatedChats: any) => {

@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import useFetch from "../../hooks/useFetch";
-import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
+import { useAppSelector } from "../../../redux/hooks";
 
 const useMessages = () => {
   const { currentConversationId } = useAppSelector((state) => state.chat);
